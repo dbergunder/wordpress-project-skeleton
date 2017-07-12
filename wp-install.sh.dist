@@ -14,12 +14,5 @@ then
     vendor/bin/wp core install --path=./wp --url=wordpress.dev --title=Wordpress --admin_user=admin --admin_email=admin@example.com
 fi
 
-vendor/bin/wp plugin install advanced-custom-fields
-vendor/bin/wp plugin install advanced-sidebar-menu
-vendor/bin/wp plugin install contact-form-7
-vendor/bin/wp plugin install custom-post-type-ui
-vendor/bin/wp plugin install the-events-calendar
-vendor/bin/wp plugin install widget-css-classes
-vendor/bin/wp plugin install woosidebars
-vendor/bin/wp plugin install widget-css-classes
-vendor/bin/wp plugin install wordpress-importer
+# Install plugins by name:
+# vendor/bin/wp plugin install advanced-custom-fields

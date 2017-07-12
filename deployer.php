@@ -21,16 +21,18 @@ set('clear_paths', ['wp/wp-config-sample.php']);
 
 // WP CLI executable directories
 set('bin_dir', 'vendor/bin');
-set('wp', '{bin_dir}/wp --path=./wp');
+set('wp', '{bin_dir}/wp');
 
 // WP CLI install WP Core
 task('install:wp', function () {
-
+    run('{wp} core download');
 });
 
 // WP CLI install plugins
 task('install:plugins', function () {
-
+    foreach (get('plugins') as $plugin) {
+        run('{wp} plugin install' . $plugin);
+    }
 });
 
 task('reload:php-fpm', function () {
@@ -45,9 +47,11 @@ task('deploy', [
     'deploy:lock',
     'deploy:release',
     'deploy:update_code',
+    'deploy:vendors',
+    'install:wp',
     'deploy:clear_paths',
     'deploy:shared',
-    'deploy:vendors',
+    'install:plugins',
     'deploy:writable',
     'deploy:symlink',
     'deploy:unlock',
