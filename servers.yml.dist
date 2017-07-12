@@ -1,0 +1,4 @@
+wordpress:
+    stage: dev
+    host: localhost
+    deploy_path: /var/www/html/wordpress
