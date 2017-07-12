@@ -10,7 +10,7 @@ rm -rf wp/wp-config-sample.php
 
 if [ ! -e wp/wp-config ]
 then
-    vendor/bin/wp config create --dbname=wordpres --dbuser=root --dbpass=root
+    vendor/bin/wp config create --dbname=wordpress --dbuser=root --dbpass=root
     vendor/bin/wp core install --path=./wp --url=wordpress.dev --title=Wordpress --admin_user=admin --admin_email=admin@example.com
 fi
 
