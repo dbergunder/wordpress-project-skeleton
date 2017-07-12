@@ -1,0 +1,25 @@
+#!/bin/sh
+
+# Make any configuration changes necessary for setting up your local and rename to wp-install.sh
+
+vendor/bin/wp --info
+
+vendor/bin/wp core download
+
+rm -rf wp/wp-config-sample.php
+
+if [ ! -e wp/wp-config ]
+then
+    vendor/bin/wp config create --dbname=wordpres --dbuser=root --dbpass=root
+    vendor/bin/wp core install --path=./wp --url=wordpress.dev --title=Wordpress --admin_user=admin --admin_email=admin@example.com
+fi
+
+vendor/bin/wp plugin install advanced-custom-fields
+vendor/bin/wp plugin install advanced-sidebar-menu
+vendor/bin/wp plugin install contact-form-7
+vendor/bin/wp plugin install custom-post-type-ui
+vendor/bin/wp plugin install the-events-calendar
+vendor/bin/wp plugin install widget-css-classes
+vendor/bin/wp plugin install woosidebars
+vendor/bin/wp plugin install widget-css-classes
+vendor/bin/wp plugin install wordpress-importer

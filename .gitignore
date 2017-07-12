@@ -1,4 +1,8 @@
 composer.phar
 .idea
 
+servers.yml
+wp-install.sh
+
 /vendor/
+/wp/

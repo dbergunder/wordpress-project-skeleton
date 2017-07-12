@@ -1,6 +1,6 @@
 {
     "name": "internationalcodecouncil/wordpress",
-    "description": "Basic wordpress install system with wp-cli",
+    "description": "Basic Wordpress install system with wp-cli",
     "type": "project",
     "require": {
         "php": "~7.1",

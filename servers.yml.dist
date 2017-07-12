@@ -2,3 +2,13 @@ wordpress:
     stage: dev
     host: localhost
     deploy_path: /var/www/html/wordpress
+    plugins:
+        - advanced-custom-fields
+        - advanced-sidebar-menu
+        - contact-form-7
+        - custom-post-type-ui
+        - the-events-calendar
+        - widget-css-classes
+        - woosidebars
+        - widget-css-classes
+        - wordpress-importer
