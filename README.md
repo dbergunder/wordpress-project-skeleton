@@ -1,0 +1,1 @@
+## WordPress composer skeleton with WP-CLI and Deployer
