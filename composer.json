@@ -1,6 +1,6 @@
 {
-    "name": "internationalcodecouncil/wordpress",
-    "description": "Basic Wordpress install system with wp-cli",
+    "name": "dbergunder/wordpress-project-skeleton",
+    "description": "Skeleton WordPress install system with wp-cli",
     "type": "project",
     "require": {
         "php": "~7.1",

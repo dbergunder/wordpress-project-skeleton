@@ -9,11 +9,15 @@ The intent of this project framework is to assist with releases and continuous i
 - Move servers.yml.dist to servers.yml for deployer script
 - Update wp-cli.yml destination folder to hold wp source files (wp default)
 
-1) Install composer
+1) (Manually) Install composer
 ```bash
 sh composer.sh
 ```
-2) Run composer install for dependencies
+2) Create a new project from this skeleton:
+```bash
+php composer.phar create-project dbergunder/wordpress-project-skeleton ./your-project-name
+```
+2.b) (Manual) Run composer install for dependencies
 ```bash
 php composer.phar install
 ```
