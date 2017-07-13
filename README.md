@@ -1,5 +1,5 @@
 ## WordPress composer skeleton with WP-CLI and Deployer
-The intent of this project framework is to support more easily support releases and continuous integration into a wordpress site.
+The intent of this project framework is to assist with releases and continuous integration for a wordpress site.
 
 *WIP*
 
@@ -7,6 +7,7 @@ The intent of this project framework is to support more easily support releases 
 - Requires >= PHP 7.1, MySQL
 - Move wp-install.sh.dist to wp-install.sh (make any necessary changes for your environment)
 - Move servers.yml.dist to servers.yml for deployer script
+- Update wp-cli.yml destination folder to hold wp source files (wp default)
 
 1) Install composer
 ```bash
