@@ -14,5 +14,8 @@ then
     vendor/bin/wp core install --path=./wp --url=wordpress.dev --title=Wordpress --admin_user=admin --admin_email=admin@example.com
 fi
 
+# Symlink themes work to wp-content folder
+find themes -maxdepth 1 -mindepth 1 -type d -exec ln -s ../../../'{}' wp/wp-content/themes/ \;
+
 # Install plugins by name:
 # vendor/bin/wp plugin install advanced-custom-fields
