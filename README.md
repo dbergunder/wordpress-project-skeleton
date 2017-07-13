@@ -1,7 +1,7 @@
-## WordPress composer skeleton with WP-CLI and Deployer
+## *WIP* WordPress Composer skeleton with WP-CLI and Deployer
 The intent of this project framework is to assist with releases and continuous integration for a wordpress site.
-
-*WIP*
+ - [WP-CLI](https://make.wordpress.org/cli/)
+ - [Deployer](https://deployer.org)
 
 ### Install Steps
 - Requires >= PHP 7.1, MySQL
@@ -9,7 +9,7 @@ The intent of this project framework is to assist with releases and continuous i
 - Move servers.yml.dist to servers.yml for deployer script
 - Update wp-cli.yml destination folder to hold wp source files (wp default)
 
-1) (Manually) Install composer
+1) Install composer
 ```bash
 sh composer.sh
 ```
@@ -17,7 +17,7 @@ sh composer.sh
 ```bash
 php composer.phar create-project dbergunder/wordpress-project-skeleton ./your-project-name
 ```
-2.b) (Manual) Run composer install for dependencies
+2.b) (Manually) Run composer install for dependencies
 ```bash
 php composer.phar install
 ```

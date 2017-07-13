@@ -35,6 +35,11 @@ task('install:plugins', function () {
     }
 });
 
+// WP Symlink Theme
+task('install:themes', function () {
+    run('find themes -maxdepth 1 -mindepth 1 -type d -exec ln -s ../../../\'{}\' wp/wp-content/themes/ \;');
+});
+
 task('reload:php-fpm', function () {
     run('sudo servicectl php7-fpm restart');
 });
