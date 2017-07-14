@@ -8,6 +8,7 @@ vendor/bin/wp core download
 
 rm -rf wp/wp-config-sample.php
 
+# Update this or remove it
 if [ ! -e wp/wp-config ]
 then
     vendor/bin/wp config create --dbname=wordpress --dbuser=root --dbpass=root
