@@ -20,7 +20,7 @@ php composer.phar create-project dbergunder/wordpress-project-skeleton ./your-pr
 # Option 2: Manually Run composer install for dependencies
 php composer.phar install
 ```
-3) Install locally wp via wp-cli commands
+3) Install wp
 ```
 # Locally, first time setup
 sh wp-install.sh
