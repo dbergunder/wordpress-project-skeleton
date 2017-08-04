@@ -2,7 +2,7 @@ composer.phar
 .idea
 
 servers.yml
-wp-install.sh
+wp-config.php
 
 /vendor/
 /wp/

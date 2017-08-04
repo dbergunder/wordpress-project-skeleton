@@ -2,11 +2,6 @@
     "name": "dbergunder/wordpress-project-skeleton",
     "description": "Skeleton WordPress install system with wp-cli",
     "type": "project",
-    "require": {
-        "php": "~7.1",
-        "wp-cli/wp-cli": "^1.2",
-        "deployer/deployer": "dev-master"
-    },
     "license": "proprietary",
     "authors": [
         {
@@ -14,5 +9,56 @@
             "email": "dbergunder@iccsafe.org"
         }
     ],
+    "require": {
+        "php": "~7.1",
+        "wp-cli/wp-cli": "^1.2",
+        "wordpress/wordpress": "*",
+        "deployer/deployer": "dev-master"
+    },
+    "repositories" : [
+        {
+            "type": "package",
+            "package": {
+                "name": "wordpress/wordpress",
+                "version": "4.8.1",
+                "source": {
+                    "url": "https://github.com/WordPress/WordPress.git",
+                    "type": "git",
+                    "reference": "master"
+                }
+            }
+        }
+    ],
+    "scripts": {
+        "symlink-wordpress-cmd": "ComposerScript::wordPressInstall",
+        "symlink-themes-cmd":
+            "ComposerScript::themeSymlink",
+        "post-update-cmd": [
+            "@symlink-wordpress-cmd",
+            "@symlink-themes-cmd"
+        ],
+        "post-install-cmd": [
+            "@symlink-wordpress-cmd",
+            "@symlink-themes-cmd"
+        ]
+    },
+    "autoload": {
+        "psr-0": {
+            "ComposerScript": ""
+        }
+    },
+    "extra": {
+        "wordpress-install-directory": "wp",
+        "wordpress-plugins": {
+            "advanced-custom-fields": "*",
+            "advanced-sidebar-menu": "*",
+            "contact-form-7": "*",
+            "custom-post-type-ui": "*",
+            "the-events-calendar": "*",
+            "widget-css-classes": "*",
+            "woosidebars": "*",
+            "wordpress-importer": "*"
+        }
+    },
     "minimum-stability": "dev"
 }
