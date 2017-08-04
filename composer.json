@@ -31,16 +31,7 @@
     ],
     "scripts": {
         "symlink-wordpress-cmd": "ComposerScript::wordPressInstall",
-        "symlink-themes-cmd":
-            "ComposerScript::themeSymlink",
-        "post-update-cmd": [
-            "@symlink-wordpress-cmd",
-            "@symlink-themes-cmd"
-        ],
-        "post-install-cmd": [
-            "@symlink-wordpress-cmd",
-            "@symlink-themes-cmd"
-        ]
+        "symlink-themes-cmd": "ComposerScript::themeSymlink"
     },
     "autoload": {
         "psr-0": {

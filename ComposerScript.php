@@ -12,15 +12,16 @@ class ComposerScript
      */
     public static function wordPressInstall(Event $event)
     {
+        $path = dirname( __FILE__ );
         // Symlink the WP vendor into /wp
-        self::symlinkWP();
+        self::symlinkWP($path);
 
         // Perform Install/Update
-        self::installWP($event->getIO());
+        self::configSetup($event->getIO(), $path);
 
         // Install WP Plugins
         $extras = $event->getComposer()->getPackage()->getExtra();
-        self::installPlugins($extras['wordpress-plugins']);
+        self::installPlugins($extras['wordpress-plugins'], $path);
     }
 
     /**
@@ -28,22 +29,24 @@ class ComposerScript
      */
     public static function themeSymlink(Event $event)
     {
+        $path = dirname( __FILE__ );
         // Symlink the themes folder into the /wp/wp-content/themes folder
-        self::symlinkThemes();
+        self::symlinkThemes($path);
     }
 
     /**
      * @param IOInterface $io
+     * @param $path
      */
-    private static function installWP(IOInterface $io)
+    private static function configSetup(IOInterface $io, $path)
     {
-        if (file_exists('wp-config.php')) {
-            // Link existing wp-config.php file from dist
-            exec("ln -s wp-config wp/wp-config.php");
+        if (file_exists($path.'/wp-config.php')) {
+            // Link existing wp-config.php file
+            exec("ln -s wp-config.php $path/wp/wp-config.php");
         } else {
-            // Install fresh copy and generate file
-            $database = $io->ask("What is the database name?", "wordpress");
-            $user = $io->ask("What is the database user?", "root");
+            // Create new wp-config and generate file
+            $database = $io->ask("What is the database name?(wordpress)", "wordpress");
+            $user = $io->ask("What is the database user?(root)", "root");
             $password = $io->askAndHideAnswer("What is the database password?");
 
             exec("vendor/bin/wp config create --dbname=$database --dbuser=$user --dbpass=$password");
@@ -56,36 +59,44 @@ class ComposerScript
             exec("vendor/bin/wp core install --path=./wp --url=$site --title=$title --admin_user=$admin --admin_email=$email");
 
             // Move and link wp-config.php file
-            exec("mv wp/wp-config.php wp-config.php");
-            exec("ln -s wp-config.php wp/wp-config.php");
+            exec("mv $path/wp/wp-config.php $path/wp-config.php");
+            exec("ln -s $path/wp-config.php $path/wp/wp-config.php");
         }
     }
 
-    private static function symlinkWP()
+    /**
+     * @param $path
+     */
+    private static function symlinkWP($path)
     {
         // Symlink version from composer vendor
-        exec("rm -rf wp && ln -s vendor/wordpress/wordpress wp");
-        exec("rm -rf wp/wp-config-sample.php");
-
+        exec("rm -rf $path/wp");
+        exec("mkdir $path/wp");
+        exec("ln -s $path/vendor/wordpress/wordpress/* wp");
+        exec("rm -rf $path/wp/wp-config-sample.php");
     }
 
-    private static function symlinkThemes()
+    /**
+     * @param $path
+     */
+    private static function symlinkThemes($path)
     {
         // Symlink all subfolders under themes directory to wordpress install theme directory
-        exec("find themes -maxdepth 1 -mindepth 1 -type d -exec ln -s ../../../'{}' wp/wp-content/themes/ \\;");
+        exec("find themes -maxdepth 1 -mindepth 1 -type d -exec ln -s $path/'{}' wp/wp-content/themes/ \\;");
     }
 
     /**
      * @param array $plugins
+     * @param $path
      */
-    private static function installPlugins($plugins)
+    private static function installPlugins($plugins, $path)
     {
         if (empty($plugins)) return;
 
         foreach ($plugins as $pluginName => $pluginVersion) {
             $version = $pluginVersion == '*' ? '' : "--version=$pluginVersion";
             // Use wp-cli to download and install plugins
-            exec("vendor/bin/wp plugin install $pluginName $version");
+            exec("$path/vendor/bin/wp plugin install $pluginName $version");
         }
     }
 }
