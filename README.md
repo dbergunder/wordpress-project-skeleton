@@ -1,11 +1,11 @@
 ## *WIP* WordPress Composer skeleton with WP-CLI and Deployer
-The intent of this project framework is to assist with releases and continuous integration for a wordpress site.
+The intent of this project framework is to assist with releases and continuous integration for a wordpress sites.  It sources from the WordPress mirrored github repo.
  - [WP-CLI](https://make.wordpress.org/cli/)
  - [Deployer](https://deployer.org)
 
 ### Install Steps
 - Requires >= PHP 7.1, MySQL
-- CP wp-config-sample.php to wp-config.php (make any necessary changes for your environment) _or_ allow composer scripts to generate wp-config.php file on new install
+- Copy ```wp-config-sample.php``` to ```wp-config.php``` (make any necessary changes for your environment) _or_ allow composer scripts to generate ```wp-config.php``` file on new install
 - Move servers.yml.dist to servers.yml for deployer script
 
 1) Install composer

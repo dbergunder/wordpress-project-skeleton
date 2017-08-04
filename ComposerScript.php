@@ -4,6 +4,7 @@ use Composer\Script\Event;
 use Composer\Io\IOInterface;
 
 /**
+ * Static Composer Script for automating deployment
  */
 class ComposerScript
 {
@@ -19,6 +20,11 @@ class ComposerScript
         // Perform Install/Update
         self::configSetup($event->getIO(), $path);
 
+        // Install or update wordpress
+        if (!self::isWPInstalled($path)) {
+            self::installWordPress($path);
+        }
+
         // Install WP Plugins
         $extras = $event->getComposer()->getPackage()->getExtra();
         self::installPlugins($extras['wordpress-plugins'], $path);
@@ -32,6 +38,15 @@ class ComposerScript
         $path = dirname( __FILE__ );
         // Symlink the themes folder into the /wp/wp-content/themes folder
         self::symlinkThemes($path);
+    }
+
+    /**
+     * @param Event $event
+     */
+    public static function projectSetup(Event $event)
+    {
+        $path = dirname( __FILE__ );
+        $event->getIo()->write("Installing core WordPress to $path");
     }
 
     /**
@@ -62,6 +77,26 @@ class ComposerScript
             exec("mv $path/wp/wp-config.php $path/wp-config.php");
             exec("ln -s $path/wp-config.php $path/wp/wp-config.php");
         }
+    }
+
+    /**
+     * @param $path
+     * @return bool
+     */
+    private static function isWPInstalled($path)
+    {
+        // exit status 0 if installed, otherwise 1
+        exec("$path/vendor/bin/wp core is-installed", $output, $exitCode);
+
+        return $exitCode == 0 ? true : false;
+    }
+
+    /**
+     * @param $path
+     */
+    private static function installWordPress($path)
+    {
+        exec("$path/vendor/bin/wp core install");
     }
 
     /**
