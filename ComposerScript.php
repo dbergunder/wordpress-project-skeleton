@@ -8,26 +8,26 @@ use Composer\Io\IOInterface;
  */
 class ComposerScript
 {
+    const WORDPRESS_VENDOR = 'wordpress' . DIRECTORY_SEPARATOR . 'wordpress';
+
     /**
      * @param Event $event
      */
     public static function wordPressInstall(Event $event)
     {
-        $path = dirname( __FILE__ );
+        $rootPath = dirname( __FILE__ );
+        $vendorPath = $event->getComposer()->getConfig()->get('vendor-dir') . DIRECTORY_SEPARATOR . self::WORDPRESS_VENDOR;
+
         // Symlink the WP vendor into /wp
-        self::symlinkWP($path);
+        self::symlinkWP($rootPath, $vendorPath);
 
         // Perform Install/Update
-        self::configSetup($event->getIO(), $path);
+        self::configSetup($event->getIO(), $rootPath, $vendorPath);
 
         // Install or update wordpress
-        if (!self::isWPInstalled($path)) {
-            self::installWordPress($path);
+        if (!self::isWPInstalled($rootPath)) {
+            self::installWordPress($rootPath);
         }
-
-        // Install WP Plugins
-        $extras = $event->getComposer()->getPackage()->getExtra();
-        self::installPlugins($extras['wordpress-plugins'], $path);
     }
 
     /**
@@ -35,9 +35,20 @@ class ComposerScript
      */
     public static function themeSymlink(Event $event)
     {
-        $path = dirname( __FILE__ );
+        $rootPath = dirname( __FILE__ );
         // Symlink the themes folder into the /wp/wp-content/themes folder
-        self::symlinkThemes($path);
+        self::symlinkThemes($rootPath);
+    }
+
+    /**
+     * @param Event $event
+     */
+    public static function pluginInstall(Event $event)
+    {
+        $rootPath = dirname( __FILE__ );
+        // Install WP Plugins
+        $extras = $event->getComposer()->getPackage()->getExtra();
+        self::installPlugins($extras['wordpress-plugins'], $rootPath);
     }
 
     /**
@@ -45,21 +56,19 @@ class ComposerScript
      */
     public static function projectSetup(Event $event)
     {
-        $path = dirname( __FILE__ );
-        $event->getIo()->write("Installing core WordPress to $path");
+        $rootPath = dirname( __FILE__ );
+        $event->getIo()->write("Installing core WordPress to $rootPath");
     }
 
     /**
      * @param IOInterface $io
-     * @param $path
+     * @param $rootPath
+     * @param $vendorPath
      */
-    private static function configSetup(IOInterface $io, $path)
+    private static function configSetup(IOInterface $io, $rootPath, $vendorPath)
     {
-        if (file_exists($path.'/wp-config.php')) {
-            // Link existing wp-config.php file
-            exec("ln -s wp-config.php $path/wp/wp-config.php");
-        } else {
-            // Create new wp-config and generate file
+        // Create new wp-config and generate file
+        if (!file_exists("$rootPath/wp-config.php")) {
             $database = $io->ask("What is the database name?(wordpress)", "wordpress");
             $user = $io->ask("What is the database user?(root)", "root");
             $password = $io->askAndHideAnswer("What is the database password?");
@@ -74,64 +83,104 @@ class ComposerScript
             exec("vendor/bin/wp core install --path=./wp --url=$site --title=$title --admin_user=$admin --admin_email=$email");
 
             // Move and link wp-config.php file
-            exec("mv $path/wp/wp-config.php $path/wp-config.php");
-            exec("ln -s $path/wp-config.php $path/wp/wp-config.php");
+            exec("mv $rootPath/wp/wp-config.php $rootPath/wp-config.php");
         }
+        // Link existing wp-config.php file
+        exec("ln -s $rootPath/wp-config.php $vendorPath/wp-config.php");
     }
 
     /**
-     * @param $path
+     * @param $rootPath
      * @return bool
      */
-    private static function isWPInstalled($path)
+    private static function isWPInstalled($rootPath)
     {
         // exit status 0 if installed, otherwise 1
-        exec("$path/vendor/bin/wp core is-installed", $output, $exitCode);
+        exec("$rootPath/vendor/bin/wp core is-installed", $output, $exitCode);
 
         return $exitCode == 0 ? true : false;
     }
 
     /**
-     * @param $path
+     * @param $rootPath
+     * @param $plugin
+     * @return bool
      */
-    private static function installWordPress($path)
+    private static function isPluginInstalled($rootPath, $plugin)
     {
-        exec("$path/vendor/bin/wp core install");
+        // exit status 0 if installed, otherwise 1
+        exec("$rootPath/vendor/bin/wp plugin is-installed $plugin", $output, $exitCode);
+
+        return $exitCode == 0 ? true : false;
     }
 
     /**
-     * @param $path
+     * @param $rootPath
      */
-    private static function symlinkWP($path)
+    private static function installWordPress($rootPath)
+    {
+        exec("$rootPath/vendor/bin/wp core install");
+    }
+
+    /**
+     * @param $rootPath
+     * @param $vendorPath
+     */
+    private static function symlinkWP($rootPath, $vendorPath)
     {
         // Symlink version from composer vendor
-        exec("rm -rf $path/wp");
-        exec("mkdir $path/wp");
-        exec("ln -s $path/vendor/wordpress/wordpress/* wp");
-        exec("rm -rf $path/wp/wp-config-sample.php");
+        // Copy the uploads folder back to root
+        if (!file_exists("$rootPath/uploads") && file_exists("$vendorPath/wp-content/uploads")) {
+            exec("mkdir $rootPath/uploads");
+            exec("cp $rootPath/wp/wp-content/uploads/* $rootPath/uploads");
+        } elseif (file_exists("$vendorPath/wp-content/uploads")) {
+            exec("cp $rootPath/wp/wp-content/uploads/* $rootPath/uploads");
+        } elseif (!file_exists("$rootPath/uploads")) {
+            exec("mkdir $rootPath/uploads");
+        }
+
+        // Remove old link to wordpress vendor and recreate wp folder
+        // TODO: make wp folder setting from composer
+        exec("rm -rf $rootPath/wp");
+        exec("mkdir $rootPath/wp");
+
+        // Copy the uploads folder back
+        exec("ln -s $rootPath/uploads $vendorPath/wp-content/uploads");
+
+        // Relink the vendor folder
+        exec("ln -s $vendorPath/* wp");
+
+        // Remove the config sample file
+        exec("rm -rf $rootPath/wp/wp-config-sample.php");
     }
 
     /**
-     * @param $path
+     * @param $rootPath
      */
-    private static function symlinkThemes($path)
+    private static function symlinkThemes($rootPath)
     {
         // Symlink all subfolders under themes directory to wordpress install theme directory
-        exec("find themes -maxdepth 1 -mindepth 1 -type d -exec ln -s $path/'{}' wp/wp-content/themes/ \\;");
+        exec("find themes -maxdepth 1 -mindepth 1 -type d -exec ln -s $rootPath/'{}' $rootPath/wp/wp-content/themes/ \\;");
     }
 
     /**
      * @param array $plugins
-     * @param $path
+     * @param $rootPath
      */
-    private static function installPlugins($plugins, $path)
+    private static function installPlugins($plugins, $rootPath)
     {
         if (empty($plugins)) return;
 
         foreach ($plugins as $pluginName => $pluginVersion) {
             $version = $pluginVersion == '*' ? '' : "--version=$pluginVersion";
-            // Use wp-cli to download and install plugins
-            exec("$path/vendor/bin/wp plugin install $pluginName $version");
+
+            if (self::isPluginInstalled($rootPath, $pluginName)) {
+                // Use wp-cli to update plugins
+                exec("$rootPath/vendor/bin/wp plugin update $pluginName $version");
+            } else {
+                // Use wp-cli to download and install plugins
+                exec("$rootPath/vendor/bin/wp plugin install $pluginName $version");
+            }
         }
     }
 }

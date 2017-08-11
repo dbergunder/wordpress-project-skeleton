@@ -11,8 +11,8 @@
     ],
     "require": {
         "php": "~7.1",
-        "wp-cli/wp-cli": "^1.2",
-        "wordpress/wordpress": "*",
+        "wp-cli/wp-cli": "^1.3",
+        "wordpress/wordpress": "4.8.1",
         "deployer/deployer": "dev-master"
     },
     "repositories" : [
@@ -21,6 +21,10 @@
             "package": {
                 "name": "wordpress/wordpress",
                 "version": "4.8.1",
+                "dist": {
+                    "url": "https://github.com/WordPress/WordPress/archive/4.8.1.zip",
+                    "type": "zip"
+                },
                 "source": {
                     "url": "https://github.com/WordPress/WordPress.git",
                     "type": "git",
@@ -30,11 +34,13 @@
         }
     ],
     "scripts": {
-        "symlink-wordpress-cmd": "ComposerScript::wordPressInstall",
+        "install-wordpress-cmd": "ComposerScript::wordPressInstall",
+        "install-plugins-cmd": "ComposerScript::pluginInstall",
         "symlink-themes-cmd": "ComposerScript::themeSymlink",
         "post-create-project-cmd": [
             "ComposerScript::projectSetup",
-            "symlink-wordpress-cmd",
+            "install-wordpress-cmd",
+            "install-plugins-cmd",
             "symlink-themes-cmd"
         ]
     },
@@ -45,16 +51,7 @@
     },
     "extra": {
         "wordpress-install-directory": "wp",
-        "wordpress-plugins": {
-            "advanced-custom-fields": "*",
-            "advanced-sidebar-menu": "*",
-            "contact-form-7": "*",
-            "custom-post-type-ui": "*",
-            "the-events-calendar": "*",
-            "widget-css-classes": "*",
-            "woosidebars": "*",
-            "wordpress-importer": "*"
-        }
+        "wordpress-plugins": {}
     },
     "minimum-stability": "dev"
 }

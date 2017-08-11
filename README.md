@@ -19,7 +19,7 @@ sh composer.sh
 php composer.phar create-project dbergunder/wordpress-project-skeleton ./your-project-name
 
 # Option 2: Clone this repo and run composer install
-php composer.phar install
+php composer.phar install --prefer-dist
 ```
 
 3) Install wp
