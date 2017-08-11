@@ -25,7 +25,8 @@ php composer.phar install --prefer-dist
 3) Install wp
 ```
 # Option 1: Symlink wordpress, install plugins, and link theme folders
-php composer.phar symlink-wordpress-cmd
+php composer.phar install-wordpress-cmd
+php composer.phar install-plugins-cmd
 php composer.phar symlink-themes-cmd
 
 # Option 2: Install remotely via deployer (requires shared folders and files, and database setup)
